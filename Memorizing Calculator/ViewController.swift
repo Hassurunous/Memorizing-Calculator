@@ -62,15 +62,20 @@ class ViewController: UIViewController {
     }
     
     // MARK: Variables
+    // Array to store numbers coming in from calculator
+    var inputNumString = String()
+    
     // Array to store input from Calculator
     var inputArray = [String]()
+    
     // Array to store completed Calculations
-    var calculationsArray = [[String]]()
+    var calculationsArray = [String]()
     
     // MARK: View Did Load
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        print(#line, inputArray)
     }
 
     // MARK: Did Receive Memory Warning
@@ -83,23 +88,36 @@ class ViewController: UIViewController {
     // MARK: Public functions
     // Get input from the calculator
     func appendToCalculationArray(input:String) {
-        var inputNum = 0
         print(#file, #function, #line)
-        print("inputNum = \(inputNum), Line: \(#line)")
         print("input = \(input), Line: \(#line)")
         switch input {
         case "=":
             //process the inputs
-            inputArray.append("=")
-            calculationsArray.append([inputArray.joined()])
+//            inputNum += 1
+            inputArray.append(inputNumString)
+//            inputArray.append("=")
+            calculationsArray.append(calcOutput(input: inputArray))
+            print(#function, #line, calculationsArray)
         case "+":
-            inputNum += 1
+//            inputNum += 1
+            inputArray.append(inputNumString)
+            inputArray.append(" + ")
+            inputNumString = ""
+            numberViewLabel.text = "0"
+//            inputNum += 1
         case "-":
-            inputNum += 1
+            inputArray.append(inputNumString)
+            inputArray.append(" - ")
+            inputNumString = ""
+            numberViewLabel.text = "0"
+//            inputNum += 1
         case "C":
             inputArray = []
+            inputNumString = ""
+            numberViewLabel.text = "0"
         default:
-            inputArray[inputNum].append(input)
+            inputNumString += input
+            numberViewLabel.text = inputNumString
         }
 //        if input == "=" {
 //            //process the inputs
@@ -120,6 +138,21 @@ class ViewController: UIViewController {
 //            inputArray.append(input)
 //        }
         print(inputArray)
+    }
+    
+    func calcOutput(input: Array<String>) -> String {
+        var formula = input.joined()
+        print(#function, #line, formula)
+        let expr = NSExpression(format: formula)
+        if let result = expr.expressionValue(with: nil, context: nil) as? NSNumber {
+            let x = result.doubleValue
+            numberViewLabel.text = String(Int(x))
+            formula += " = " + String(Int(x))
+            print(#function, #line, formula)
+        } else {
+            print("failed")
+        }
+        return formula
     }
     
 
